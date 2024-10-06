@@ -557,23 +557,24 @@ async def send_msg(bot, message):
     else:
         await message.reply_text("<b>ᴜꜱᴇ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ᴀꜱ ᴀ ʀᴇᴘʟʏ ᴛᴏ ᴀɴʏ ᴍᴇꜱꜱᴀɢᴇ, ꜰᴏʀ ᴇɢ - <code>/send userid1 userid2</code></b>")
 
-@Client.on_message(filters.regex("#request"))
+
+@Client.on_message(filters.regex(r"#request", re.IGNORECASE))
 async def send_request(bot, message):
     try:
         request = message.text.split(" ", 1)[1]
-    except:
-        await message.reply_text("<b>‼️ ʏᴏᴜʀ ʀᴇǫᴜᴇsᴛ ɪs ɪɴᴄᴏᴍᴘʟᴇᴛᴇ</b>")
+    except IndexError:
+        await message.reply_text("!! YOUR REQUEST IS INCOMPLETE")
         return
-    buttons = [[
-        InlineKeyboardButton('👀 ᴠɪᴇᴡ ʀᴇǫᴜᴇꜱᴛ 👀', url=f"{message.link}")
-    ],[
-        InlineKeyboardButton('⚙ sʜᴏᴡ ᴏᴘᴛɪᴏɴ ⚙', callback_data=f'show_options#{message.from_user.id}#{message.id}')
-    ]]
+
+    buttons = [
+        [InlineKeyboardButton('VIEW REQUEST', url=f"{message.link}")],
+        [InlineKeyboardButton('SHOW OPTION O', callback_data=f'show_options#{message.from_user.id}#{message.id}')]
+    ]
+
     sent_request = await bot.send_message(REQUEST_CHANNEL, script.REQUEST_TXT.format(message.from_user.mention, message.from_user.id, request), reply_markup=InlineKeyboardMarkup(buttons))
-    btn = [[
-         InlineKeyboardButton('✨ ᴠɪᴇᴡ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ ✨', url=f"{sent_request.link}")
-    ]]
-    await message.reply_text("<b>✅ sᴜᴄᴄᴇꜱꜱғᴜʟʟʏ ʏᴏᴜʀ ʀᴇǫᴜᴇꜱᴛ ʜᴀꜱ ʙᴇᴇɴ ᴀᴅᴅᴇᴅ, ᴘʟᴇᴀꜱᴇ ᴡᴀɪᴛ ꜱᴏᴍᴇᴛɪᴍᴇ...</b>", reply_markup=InlineKeyboardMarkup(btn))
+
+    btn = [[InlineKeyboardButton('VIEW YOUR REQUEST', url=f"{sent_request.link}")]]
+    await message.reply_text("✓ SUCCESSFULLY YOUR REQUEST HAS BEEN ADDED, PLEASE WAIT SOMETIME...", reply_markup=InlineKeyboardMarkup(btn))
 
 @Client.on_message(filters.command("search"))
 async def search_files(bot, message):
